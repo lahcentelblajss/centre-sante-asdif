@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Information & Communication</title>
+
+<style>
+
+html,body{
+height:100%;
+margin:0;
+}
+
+body{
+font-family:Arial, sans-serif;
+background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center fixed;
+background-size:cover;
+
+/* 🔥 توسيط كامل */
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+/* CONTAINER CENTRÉ AU MILIEU */
+.container{
+width:70%;
+max-width:1000px;
+min-height:300px;
+
+background:rgba(255,255,255,0.10);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+
+padding:18px;
+border-radius:14px;
+box-shadow:0 0 25px rgba(0,0,0,0.25);
+}
+
+/* LOGOS */
+.logos{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:40px;
+margin-bottom:8px;
+}
+
+.logos img{
+width:280px;
+max-width:45%;
+border-radius:10px;
+}
+
+/* TITLE */
+h2{
+text-align:center;
+color:#0b1a33;
+margin:5px 0 12px 0;
+font-size:18px;
+}
+
+/* CONTACT */
+.contact-wrapper{
+display:flex;
+justify-content:flex-start;
+margin-top:10px;
+}
+
+.contact-card{
+width:910px;
+background:rgba(255,255,255,0.75);
+border-left:6px solid #d4af37;
+border-radius:12px;
+padding:15px;
+box-shadow:0 6px 18px rgba(0,0,0,0.12);
+font-size:12px;
+transition:0.3s;
+cursor:pointer;
+}
+
+.contact-card:hover{
+transform:translateY(-3px);
+box-shadow:0 0 15px rgba(212,175,55,0.6);
+}
+
+/* INPUTS */
+input, textarea, select{
+width:95%;
+padding:6px;
+margin-top:5px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:12px;
+outline:none;
+}
+
+/* 🔥 STYLE ZÉN DU SELECT (TYP) */
+select{
+background:#0b1a33;
+color:#d4af37;
+border:1px solid #d4af37;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+select:hover{
+box-shadow:0 0 12px #d4af37, 0 0 25px rgba(212,175,55,0.5);
+transform:scale(1.02);
+}
+
+select option{
+background:white;
+color:#0b1a33;
+}
+
+/* FILE ROW */
+.file-row{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:8px;
+flex-wrap:wrap;
+}
+
+.file-input{
+display:none;
+}
+
+.custom-file-btn{
+display:inline-block;
+padding:8px 12px;
+background:#0b1a33;
+color:#d4af37;
+border-radius:8px;
+cursor:pointer;
+font-size:12px;
+transition:0.3s;
+white-space:nowrap;
+}
+
+.custom-file-btn:hover{
+box-shadow:0 0 12px rgba(212,175,55,0.9),
+           0 0 25px rgba(212,175,55,0.5);
+transform:scale(1.03);
+}
+
+/* BUTTONS */
+button{
+padding:7px 12px;
+border-radius:8px;
+background:#0b1a33;
+color:#d4af37;
+cursor:pointer;
+margin-top:8px;
+font-weight:bold;
+border:none;
+font-size:12px;
+transition:0.3s;
+position:relative;
+overflow:hidden;
+}
+
+button:hover{
+box-shadow:0 0 12px rgba(212,175,55,0.9),
+           0 0 25px rgba(212,175,55,0.5);
+transform:scale(1.03);
+}
+
+/* NAV EN UNE SEULE LIGNE */
+.nav-buttons{
+display:flex;
+justify-content:space-between;
+gap:10px;
+margin-top:15px;
+}
+
+.back-btn, .campaign-btn{
+background:#0b1a33;
+color:#d4af37;
+padding:10px 12px;
+border-radius:10px;
+text-decoration:none;
+font-weight:bold;
+text-align:center;
+flex:1;
+font-size:12px;
+transition:0.3s;
+}
+
+.back-btn:hover, .campaign-btn:hover{
+box-shadow:0 0 12px rgba(212,175,55,0.9),
+           0 0 25px rgba(212,175,55,0.5);
+transform:scale(1.03);
+}
+
+/* FOOTER */
+.footer{
+margin-top:10px;
+text-align:center;
+font-weight:bold;
+color:#0b1a33;
+border-top:1px solid #ddd;
+padding-top:8px;
+font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logos">
+<img src="{{ url_for('static', filename='logine2.png') }}">
+<img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>📢 Information & Communication</h2>
+
+<div class="contact-wrapper">
+<div class="contact-card">
+
+<form method="POST" action="/update_contact_info">
+
+<b>📍 Informations de contact</b>
+
+<div>📞 <input type="text" name="phone" value="{{ contact[0] }}"></div>
+<div>📧 <input type="text" name="email" value="{{ contact[1] }}"></div>
+<div>⏰ <input type="text" name="hours" value="{{ contact[2] }}"></div>
+
+<button type="submit">✏ Modifier</button>
+
+</form>
+
+</div>
+</div>
+
+<div class="image-form">
+
+<form method="POST" action="/upload_campaign" enctype="multipart/form-data">
+
+<h3>🖼 Ajouter une image</h3>
+
+<input type="text" name="title" placeholder="Titre de l'image" required>
+
+<select name="category" required>
+<option value="">TYP</option>
+<option value="Mère et enfant">Mère et enfant</option>
+<option value="Santé publique">Santé publique</option>
+<option value="Maladies chroniques">Maladies chroniques</option>
+<option value="Maladies générales">Maladies générales</option>
+<option value="Annonce">Annonce</option>
+</select>
+
+<div class="file-row">
+
+<label class="custom-file-btn">
+📂 Choose File
+<input type="file" name="image" class="file-input" required>
+</label>
+
+<button type="submit">📤 Ajouter image</button>
+
+</div>
+
+</form>
+
+</div>
+
+<div class="nav-buttons">
+<a href="/dashboard" class="back-btn">⬅ Retour</a>
+<a href="/campaigns" class="campaign-btn">📢 Campagnes</a>
+</div>
+
+<div class="footer">
+Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+</body>
+</html>

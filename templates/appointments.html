@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Rendez-vous</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+<style>
+body{
+font-family:Arial, sans-serif;
+margin:0;
+padding:20px;
+
+/* 🔥 FIX ONLY: FULL SCREEN BACKGROUND */
+background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center fixed;
+background-size:cover;
+}
+
+/* CONTAINER GLASS */
+.container{
+width:75%;
+margin:auto;
+
+background:rgba(255,255,255,0.18);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 25px rgba(0,0,0,0.25);
+min-height:700px;
+}
+
+/* LOGOS */
+.logos{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:40px;
+margin-bottom:15px;
+}
+
+.logos img{
+width:280px;
+max-width:45%;
+border-radius:10px;
+}
+
+/* TITLE */
+h2{
+text-align:center;
+color:#0b1a33;
+margin:10px 0 25px 0;
+letter-spacing:0.5px;
+font-size:18px;
+}
+
+/* FORM */
+form{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:12px;
+margin-top:25px;
+margin-bottom:15px;
+}
+
+/* INPUTS */
+input,select{
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+transition:0.3s;
+font-weight:600;
+background:rgba(255,255,255,0.8);
+}
+
+input::placeholder{
+font-weight:600;
+color:#666;
+}
+
+input:hover,select:hover{
+border-color:#d4af37;
+box-shadow:0 0 12px rgba(212,175,55,0.8);
+}
+
+input:focus,select:focus{
+outline:none;
+border-color:#d4af37;
+box-shadow:0 0 15px rgba(212,175,55,0.9);
+}
+
+/* BUTTONS GLOW */
+button{
+padding:10px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+background:#0b1a33;
+color:#d4af37;
+box-shadow:0 2px 10px rgba(0,0,0,0.25);
+transition:0.3s;
+position:relative;
+overflow:hidden;
+}
+
+button:hover{
+transform:scale(1.07);
+box-shadow:0 0 12px rgba(212,175,55,0.9),
+           0 0 25px rgba(212,175,55,0.5);
+}
+
+button::before{
+content:"";
+position:absolute;
+top:0;
+left:-120%;
+width:120%;
+height:100%;
+background:linear-gradient(120deg,transparent,rgba(212,175,55,0.4),transparent);
+transition:0.6s;
+}
+
+button:hover::before{
+left:120%;
+}
+
+/* FILTER */
+.filter{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:10px;
+margin:10px 0;
+}
+
+/* TABLE */
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:#0b1a33;
+color:white;
+}
+
+/* BACK */
+.back{
+text-align:center;
+margin-top:15px;
+}
+
+/* FOOTER */
+.footer{
+text-align:center;
+margin-top:40px;
+font-weight:bold;
+color:#0b1a33;
+}
+
+/* NOTIF */
+#notifBtn{
+position:fixed;
+top:15px;
+right:15px;
+background:#0b1a33;
+color:#d4af37;
+width:45px;
+height:45px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:20px;
+box-shadow:0 0 10px rgba(0,0,0,0.3);
+z-index:1000;
+}
+
+#notifCount{
+position:absolute;
+top:-5px;
+right:-5px;
+background:red;
+color:white;
+font-size:12px;
+width:20px;
+height:20px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+}
+
+#notifBox{
+position:fixed;
+top:70px;
+right:15px;
+width:280px;
+background:white;
+border-radius:12px;
+box-shadow:0 0 15px rgba(0,0,0,0.2);
+padding:10px;
+display:none;
+z-index:999;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="beepSound" src="{{ url_for('static', filename='Beep25.mp3') }}"></audio>
+
+<div id="notifBtn" onclick="toggleNotif()">
+🔔
+<div id="notifCount">0</div>
+</div>
+
+<div id="notifBox">
+<h4>🔔 Notifications</h4>
+<div id="notifContent"></div>
+</div>
+
+<div class="container">
+
+<div class="logos">
+<img src="{{ url_for('static', filename='logine2.png') }}">
+<img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>📅 Gestion des Rendez-vous</h2>
+
+<form method="POST" action="/appointments" onsubmit="playBeep()">
+
+<select name="type" required>
+<option value="">Type</option>
+<option value="Vaccination">💉 Vaccination</option>
+<option value="Grossesse">🤰 Grossesse</option>
+</select>
+
+<input type="text" name="nom" placeholder="Nom patient" required>
+<input type="text" id="date" name="date" placeholder="Date" required>
+<input id="heure" name="heure" placeholder="Heure" required>
+<input type="text" name="motif" placeholder="Motif">
+
+<button type="submit">➕ Ajouter</button>
+
+</form>
+
+<div class="filter">
+<input type="text" id="f_name" placeholder="🔍 Nom">
+<input type="date" id="f_date">
+<select id="f_type">
+<option value="">Type</option>
+<option value="Vaccination">Vaccination</option>
+<option value="Grossesse">Grossesse</option>
+</select>
+
+<button type="button" onclick="resetFilter()">🔄 Reset</button>
+</div>
+
+<table id="table">
+<tr>
+<th>Type</th>
+<th>Nom</th>
+<th>Date</th>
+<th>Heure</th>
+<th>Motif</th>
+<th>Action</th>
+</tr>
+
+{% for r in rendezvous %}
+<tr>
+<td>{{ r[1] }}</td>
+<td>{{ r[2] }}</td>
+<td>{{ r[3] }}</td>
+<td>{{ r[4] }}</td>
+<td>{{ r[5] }}</td>
+<td>
+<button onclick="location.href='/delete_rdv/{{ r[0] }}'">🗑</button>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<div class="back">
+<button onclick="location.href='/dashboard'">⬅ Retour</button>
+</div>
+
+<div class="footer">
+Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+<script>
+
+flatpickr("#date",{locale:"fr",dateFormat:"Y-m-d"});
+flatpickr("#heure",{enableTime:true,noCalendar:true,dateFormat:"H:i",time_24hr:true});
+
+function playBeep(){
+let audio=document.getElementById("beepSound");
+audio.currentTime=0;
+audio.play();
+}
+
+function filterTable(){
+let n=document.getElementById("f_name").value.toLowerCase();
+let d=document.getElementById("f_date").value;
+let t=document.getElementById("f_type").value;
+
+document.querySelectorAll("#table tr").forEach((row,i)=>{
+if(i==0)return;
+let c=row.children;
+let show=
+(!n||c[1].innerText.toLowerCase().includes(n)) &&
+(!d||c[2].innerText.includes(d)) &&
+(!t||c[0].innerText.includes(t));
+row.style.display=show?"":"none";
+});
+}
+
+document.getElementById("f_name").onkeyup=filterTable;
+document.getElementById("f_date").onchange=filterTable;
+document.getElementById("f_type").onchange=filterTable;
+
+function resetFilter(){
+document.getElementById("f_name").value="";
+document.getElementById("f_date").value="";
+document.getElementById("f_type").value="";
+
+document.querySelectorAll("#table tr").forEach((row,i)=>{
+if(i==0)return;
+row.style.display="";
+});
+}
+
+function toggleNotif(){
+let box=document.getElementById("notifBox");
+let count=document.getElementById("notifCount");
+
+box.style.display = box.style.display==="block" ? "none" : "block";
+count.innerText="0";
+}
+
+function loadNotifications(){
+fetch("/notifications")
+.then(r=>r.json())
+.then(data=>{
+let content=document.getElementById("notifContent");
+let count=document.getElementById("notifCount");
+
+content.innerHTML="";
+count.innerText=data.length;
+
+data.forEach(n=>{
+content.innerHTML+=`
+<div style="background:#0b1a33;color:#d4af37;padding:8px;margin:5px 0;border-radius:8px;">
+📅 ${n.nom}<br>
+📌 ${n.type}<br>
+⏰ dans 24h
+</div>`;
+});
+});
+}
+
+setInterval(loadNotifications,30000);
+loadNotifications();
+
+</script>
+
+</body>
+</html>

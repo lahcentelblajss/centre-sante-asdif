@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+
+<title>Système de gestion du Centre de Santé Rural 2éme Niveau - ASDIF</title>
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+
+    background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center;
+    background-size:cover;
+
+    text-align:center;
+}
+
+/* 🔷 BOX */
+.container{
+    width:640px;
+    margin:70px auto;
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    padding:40px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.35);
+    box-shadow:0 6px 24px rgba(0,0,0,0.22);
+}
+
+/* 🔥 LOGOS */
+.logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    margin-bottom:20px;
+}
+
+.logos img{
+    width:290px;
+}
+
+/* TITLE */
+h2{
+    color:#0b1a33;
+    margin:25px 0 40px 0;
+    font-family: Constantia, "Times New Roman", serif;
+    font-size:20px;
+    font-weight:bold;
+    letter-spacing:0.3px;
+}
+
+/* inputs */
+input{
+    width:400px;
+    padding:14px;
+    margin:15px auto;
+    display:block;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+/* 🔗 FORGOT */
+.forgot{
+    display:block;
+    margin-top:15px;
+    color:#0b1a33;
+    cursor:pointer;
+    font-size:13px;
+    text-decoration:underline;
+}
+
+.forgot:hover{
+    color:#d4af37;
+}
+
+/* BUTTON */
+button{
+    width:220px;
+    padding:14px;
+    background:linear-gradient(135deg,#0b1a33,#142a52);
+    color:#d4af37;
+    border:none;
+    border-radius:12px;
+    font-size:17px;
+    cursor:pointer;
+    margin-top:8px;
+    font-weight:bold;
+    position:relative;
+    overflow:hidden;
+    transition:all 0.35s ease;
+    box-shadow:0 4px 15px rgba(0,0,0,0.25);
+}
+
+button::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-120%;
+    width:120%;
+    height:100%;
+    background:linear-gradient(120deg,transparent,rgba(212,175,55,0.35),transparent);
+    transition:all 0.6s ease;
+}
+
+button:hover{
+    transform:translateY(-2px) scale(1.05);
+    box-shadow:0 0 18px #d4af37, 0 0 35px rgba(212,175,55,0.4);
+    color:#fff;
+}
+
+button:hover::before{
+    left:120%;
+}
+
+button:active{
+    transform:scale(0.98);
+}
+
+/* MODAL */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.modal-box{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    width:350px;
+    text-align:center;
+    animation:fadeSlide 0.4s ease;
+    position:relative;
+}
+
+.close{
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size:22px;
+    cursor:pointer;
+}
+
+/* footer */
+.footer{
+    margin-top:40px;
+    font-size:14px;
+    font-weight:bold;
+    color:#0b1a33;
+}
+
+/* animation */
+.container{
+    animation:fadeSlide 0.8s ease;
+}
+
+@keyframes fadeSlide{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logos">
+        <img src="{{ url_for('static', filename='logine2.png') }}">
+        <img src="{{ url_for('static', filename='logine1.png') }}">
+    </div>
+
+    <h2>Système de gestion du Centre de Santé Rural 2éme Niveau - ASDIF</h2>
+
+    <form method="POST">
+        <input type="text" name="username" placeholder="Csr2Asdif" required>
+        <input type="password" name="password" placeholder="••••••••" required>
+
+        <button type="submit">Connexion</button>
+
+        <!-- 👇 تحت الزر -->
+        <span class="forgot" onclick="openModal()">Mot de passe oublié ?</span>
+    </form>
+
+    <div class="footer">
+        <p>Ad.système --Ag. de Saisie: Lahcen ID-HAMMAME--</p>
+        <p>2026 © Tous droits réservés - Centre de Santé Rural Niveau 2 - ASDIF</p>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <div class="modal-box">
+        <span class="close" onclick="closeModal()">✖</span>
+        <h3>Récupération</h3>
+        <p>Contactez l’administrateur pour réinitialiser le mot de passe.</p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<script>
+function openModal(){
+    document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+</script>
+
+</body>
+</html>

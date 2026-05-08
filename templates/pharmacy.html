@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr-FR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Language" content="fr">
+
+<title>Pharmacie</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+
+/* 🔥 FIX ONLY: FULL SCREEN BACKGROUND */
+background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center fixed;
+background-size:cover;
+
+margin:0;
+padding:20px;
+}
+
+/* container */
+.container{
+width:60%;
+margin:auto;
+background:rgba(255,255,255,0.70);
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 15px rgba(0,0,0,0.15);
+}
+
+/* logo */
+.logo{
+width:650px;
+display:block;
+margin:0 auto 20px auto;
+border-radius:12px;
+}
+
+/* title */
+h2{
+text-align:center;
+color:#0b1a33;
+margin-bottom:40px;
+}
+
+/* inputs */
+input, select{
+padding:12px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:14px;
+transition:0.3s;
+font-weight:bold;
+background:rgba(255,255,255,0.9);
+}
+
+input::placeholder{
+font-weight:bold;
+color:#666;
+}
+
+input:hover, select:hover{
+border-color:#d4af37;
+box-shadow:0 0 12px rgba(212,175,55,0.7);
+}
+
+input:focus, select:focus{
+outline:none;
+border-color:#d4af37;
+box-shadow:0 0 15px rgba(212,175,55,0.9);
+}
+
+/* form */
+form{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+/* buttons glow */
+button{
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+background:#0b1a33;
+color:white;
+transition:0.3s;
+}
+
+button:hover{
+background:#d4af37;
+color:#0b1a33;
+box-shadow:0 0 12px #d4af37, 0 0 25px rgba(212,175,55,0.7);
+transform:scale(1.03);
+}
+
+/* table */
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:#0b1a33;
+color:white;
+}
+
+tr:hover{
+background:#f1f1f1;
+}
+
+.alert{
+color:red;
+font-weight:bold;
+}
+
+/* back */
+.back{
+margin-top:20px;
+text-align:center;
+}
+
+/* footer */
+.footer{
+margin-top:25px;
+text-align:center;
+font-size:14px;
+font-weight:bold;
+color:#0b1a33;
+}
+
+/* table button glow */
+td button{
+transition:0.3s;
+}
+
+td button:hover{
+box-shadow:0 0 12px #d4af37;
+transform:scale(1.1);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div style="display:flex;justify-content:center;align-items:center;gap:25px;margin-bottom:10px;">
+  <img src="{{ url_for('static', filename='logine1.png') }}" style="width:300px;max-width:45%;">
+  <img src="{{ url_for('static', filename='logine2.png') }}" style="width:300px;max-width:45%;">
+</div>
+
+<h2>💊 Gestion de la Pharmacie</h2>
+
+<form method="POST" action="/pharmacy">
+
+<input type="text" name="nom" placeholder="Nom du médicament" required>
+
+<input type="number" name="quantite" placeholder="Quantité" required>
+
+<input type="text" id="date" name="expiration" placeholder="Date d'expiration" required>
+
+<button type="submit">➕ Ajouter</button>
+</form>
+
+<table>
+<tr>
+<th>Médicament</th>
+<th>Quantité</th>
+<th>Date expiration</th>
+<th>Statut</th>
+<th>Action</th>
+</tr>
+
+{% for med in medicaments %}
+<tr>
+<td>{{ med[1] }}</td>
+<td>{{ med[2] }}</td>
+<td>{{ med[3] }}</td>
+
+<td>
+{% if med[3] < today %}
+<span class="alert">Expiré</span>
+{% else %}
+Valide
+{% endif %}
+</td>
+
+<td>
+<button onclick="location.href='/delete_med/{{ med[0] }}'">🗑</button>
+</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+<div class="back">
+<button onclick="location.href='/dashboard'">⬅ Retour</button>
+</div>
+
+<div class="footer">
+© 2026 Tous droits réservés - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+<script>
+flatpickr("#date", {
+    locale: "fr",
+    dateFormat: "d/m/Y"
+});
+</script>
+
+</body>
+</html>

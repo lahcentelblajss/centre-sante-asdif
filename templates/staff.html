@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>STAFF PRO</title>
+
+<style>
+
+/* ✅ حل مشكلة الخلفية */
+html, body{
+height:100%;
+margin:0;
+}
+
+body{
+font-family:Arial;
+text-align:center;
+background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center fixed;
+background-size:cover;
+}
+
+/* CONTAINER */
+.container{
+width:1000px;
+margin:25px auto;
+background:rgba(255,255,255,0.22);
+backdrop-filter:blur(12px);
+padding:40px;
+border-radius:15px;
+box-shadow:0 0 20px rgba(0,0,0,0.2);
+}
+
+/* LOGOS */
+.logos{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:40px;
+margin-bottom:25px;
+}
+
+.logos img{
+width:298px;
+border-radius:10px;
+}
+
+/* TOP */
+.top{
+display:flex;
+gap:10px;
+justify-content:center;
+margin-bottom:15px;
+}
+
+input,select{
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+width:200px;
+font-weight:bold;
+transition:0.3s;
+}
+
+input:hover,select:hover{
+box-shadow:0 0 10px gold;
+border-color:gold;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+margin-top:20px;
+}
+
+/* CARD */
+.card{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 4px 10px rgba(0,0,0,0.15);
+position:relative;
+transition:0.3s;
+cursor:pointer;
+}
+
+.card:hover{
+transform:translateY(-5px);
+box-shadow:0 0 20px gold;
+}
+
+/* 🔥 إظهار عند التفعيل */
+.card.active .actions{
+opacity:1;
+transform:scale(1);
+pointer-events:auto;
+}
+
+.icon{font-size:40px;}
+p{margin:5px;font-weight:bold;color:#0b1a33;}
+
+/* ACTIONS مخفية */
+.actions{
+position:absolute;
+top:5px;
+right:5px;
+opacity:0;
+transform:scale(0.8);
+pointer-events:none;
+transition:0.3s;
+}
+
+/* BUTTON BASE */
+button{
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* GLOW BUTTON */
+.btn-glow{
+padding:10px 18px;
+border-radius:12px;
+transition:0.35s;
+position:relative;
+overflow:hidden;
+}
+
+/* ADD */
+.btn-glow.add{
+background:#0b1a33;
+color:#d4af37;
+animation:pulseGlow 2s infinite;
+}
+
+/* BACK */
+.btn-glow.back{
+background:rgba(255,255,255,0.35);
+color:#0b1a33;
+border:1px solid rgba(11,26,51,0.3);
+}
+
+.btn-glow:hover{
+transform:translateY(-3px) scale(1.05);
+box-shadow:0 0 15px #d4af37,0 0 30px rgba(212,175,55,0.4);
+}
+
+.btn-glow::before{
+content:"";
+position:absolute;
+top:0;
+left:-120%;
+width:120%;
+height:100%;
+background:linear-gradient(120deg,transparent,rgba(212,175,55,0.4),transparent);
+transition:0.6s;
+}
+
+.btn-glow:hover::before{
+left:120%;
+}
+
+/* PULSE */
+@keyframes pulseGlow{
+0%{box-shadow:0 0 5px rgba(212,175,55,0.3);}
+50%{box-shadow:0 0 20px rgba(212,175,55,0.9),0 0 40px rgba(212,175,55,0.5);}
+100%{box-shadow:0 0 5px rgba(212,175,55,0.3);}
+}
+
+.footer{
+margin-top:30px;
+font-weight:bold;
+color:#0b1a33;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logos">
+<img src="{{ url_for('static', filename='logine2.png') }}">
+<img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>Cadres et utilisateurs</h2>
+
+<div class="top">
+<input id="name" placeholder="Nom">
+
+<select id="role">
+<option>Infirmière</option>
+<option>Infirmière de santé familiale et communautaire</option>
+<option>Sage-femme</option>
+<option>Agent de sécurité</option>
+<option>Agent de nettoyage</option>
+<option>Agent de saisie</option>
+<option>Chauffeur</option>
+<option>Médecin</option>
+<option>Administratif</option>
+<option>Jardinier</option>
+<option>Pharmacien</option>
+</select>
+
+<button class="btn-glow add" onclick="playSound(); add()">➕ Ajouter</button>
+<button class="btn-glow back" onclick="playSound(); window.location.href='/dashboard'">↩ Retour</button>
+</div>
+
+<div class="grid">
+
+{% for s in staff %}
+<div class="card" data-id="{{ s[0] }}" onclick="toggleCard(this)">
+
+<div class="actions">
+<button onclick="event.stopPropagation(); edit(this)">✏️</button>
+<button onclick="event.stopPropagation(); del(this)">x</button>
+</div>
+
+<div class="icon">{{ s[3] }}</div>
+<p class="role">{{ s[2] }}</p>
+<p class="name">{{ s[1] }}</p>
+
+</div>
+{% endfor %}
+
+</div>
+
+<div class="footer">
+Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+<audio id="clickSound" src="{{ url_for('static', filename='beep.mp3') }}"></audio>
+
+<script>
+
+function playSound(){
+let s=document.getElementById("clickSound");
+s.currentTime=0;
+s.play();
+}
+
+/* 🔥 تفعيل كارط واحدة فقط */
+function toggleCard(card){
+document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
+card.classList.add("active");
+}
+
+/* إغلاق عند الضغط خارج */
+document.addEventListener("click",function(e){
+if(!e.target.closest(".card")){
+document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
+}
+});
+
+function add(){
+let name=document.getElementById("name").value;
+let role=document.getElementById("role").value;
+
+fetch("/add_staff",{
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:`name=${name}&role=${role}`
+})
+.then(()=>location.reload());
+}
+
+function edit(btn){
+playSound();
+let card=btn.closest(".card");
+
+let role=card.querySelector(".role").innerText;
+let name=card.querySelector(".name").innerText;
+
+card.innerHTML=`
+<input class="role" value="${role}">
+<input class="name" value="${name}">
+<button onclick="save(this)">💾</button>
+`;
+}
+
+function save(btn){
+let card=btn.closest(".card");
+let id=card.dataset.id;
+
+let role=card.querySelector(".role").value;
+let name=card.querySelector(".name").value;
+
+fetch("/update_staff",{
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:`id=${id}&role=${role}&name=${name}`
+})
+.then(()=>location.reload());
+}
+
+function del(btn){
+playSound();
+let card=btn.closest(".card");
+let id=card.dataset.id;
+
+fetch("/delete_staff/"+id)
+.then(()=>location.reload());
+}
+
+</script>
+
+</body>
+</html>

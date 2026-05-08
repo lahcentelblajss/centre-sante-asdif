@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Gestion des utilisateurs</title>
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    margin:0;
+    padding:0;
+    text-align:center;
+    background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center;
+    background-size:cover;
+}
+
+/* CONTAINER */
+.container{
+    width:1000px;
+    margin:40px auto;
+    background:rgba(255,255,255,0.18);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    padding:30px;
+    border-radius:14px;
+    box-shadow:0 0 25px rgba(0,0,0,0.25);
+}
+
+/* LOGOS */
+.logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    margin-bottom:15px;
+}
+
+.logos img{
+    width:280px;
+    border-radius:10px;
+}
+
+/* TITLE */
+h2{
+margin:10px 0 18px 0;
+color:#0b1a33;
+font-size:20px;
+font-weight:bold;
+}
+
+/* ONLINE BOX */
+.online-box{
+    background:#0b1a33;
+    color:#d4af37;
+    padding:14px;
+    border-radius:10px;
+    margin:18px 0;
+    text-align:left;
+    box-shadow:0 0 12px rgba(0,0,0,0.6);
+}
+
+.online-user{
+    padding:6px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    font-size:14px;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:22px;
+    background:#0b1a33;
+    color:white;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+th{
+    background:#0b1a33;
+    color:#d4af37;
+    padding:12px;
+}
+
+td{
+    padding:12px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+/* INPUTS */
+input, select{
+    padding:9px;
+    border-radius:8px;
+    border:2px solid #d4af37;
+    background:#0b1a33;
+    color:white;
+}
+
+/* BUTTONS */
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.35s;
+    position:relative;
+    overflow:hidden;
+}
+
+button:hover{
+    box-shadow:0 0 12px rgba(212,175,55,0.9),
+               0 0 25px rgba(212,175,55,0.5);
+    transform:translateY(-2px) scale(1.03);
+}
+
+button::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-120%;
+    width:120%;
+    height:100%;
+    background:linear-gradient(120deg,transparent,rgba(212,175,55,0.4),transparent);
+    transition:0.6s;
+}
+
+button:hover::before{
+    left:120%;
+}
+
+form button[type="submit"]{
+    background:#0b1a33;
+    color:#d4af37;
+    border:1px solid #d4af37;
+}
+
+.back-btn{
+    margin-top:25px;
+    background:#0b1a33;
+    color:#d4af37;
+    border:1px solid #d4af37;
+    padding:10px 16px;
+}
+
+.edit{background:#2ecc71;color:white;}
+.delete{background:#e74c3c;color:white;}
+
+.footer{
+    margin-top:25px;
+    font-weight:bold;
+    color:#0b1a33;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logos">
+    <img src="{{ url_for('static', filename='logine2.png') }}">
+    <img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>Gestion des utilisateurs</h2>
+
+<div class="online-box">
+<strong>🟢 Utilisateurs en ligne (<span id="onlineCount">0</span>)</strong>
+
+<div id="onlineList">
+{% for u in online_users %}
+<div class="online-user">
+🟢 {{ u[0] }} — IP: {{ u[2] }}
+</div>
+{% else %}
+<div class="online-user">⚪ Aucun utilisateur connecté</div>
+{% endfor %}
+</div>
+
+</div>
+
+<form method="POST" action="/users">
+    <input type="text" name="username" placeholder="Nom utilisateur" required>
+    <input type="password" name="password" placeholder="Mot de passe" required>
+
+    <select name="role" required>
+        <option value="">-- Rôle --</option>
+        <option value="admin">Admin</option>
+        <option value="staff">Personnel</option>
+        <option value="viewer">Consultation</option>
+    </select>
+
+    <button type="submit">Ajouter</button>
+</form>
+
+<table>
+<tr>
+<th>Utilisateur</th>
+<th>Rôle</th>
+<th>Dernière connexion</th>
+<th>Actions</th>
+</tr>
+
+{% for user in users %}
+<tr>
+<td>{{ user[1] }}</td>
+<td>{{ user[3] }}</td>
+<td>{{ user[4] or "Jamais" }}</td>
+<td>
+<button class="delete" onclick="deleteRow({{ user[0] }},this)">Supprimer</button>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Historique des connexions</h2>
+
+<table>
+<tr>
+<th>Utilisateur</th>
+<th>Entrée</th>
+<th>Sortie</th>
+<th>IP</th>
+</tr>
+
+{% for h in history %}
+<tr>
+<td>{{ h[0] }}</td>
+<td>🟢 {{ h[1] }}</td>
+<td>
+{% if h[2] %}
+🔴 {{ h[2] }}
+{% else %}
+🟡 En ligne
+{% endif %}
+</td>
+<td>{{ h[3] }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<button class="back-btn" onclick="location.href='/dashboard'">Retour</button>
+
+<div class="footer">
+Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+<script>
+
+let usersData = [];
+
+function loadOnline(){
+fetch("/online_users")
+.then(res=>res.json())
+.then(data=>{
+usersData = data;
+document.getElementById("onlineCount").innerText = data.length;
+renderOnline();
+});
+}
+
+function renderOnline(){
+let list = document.getElementById("onlineList");
+
+if(usersData.length === 0){
+list.innerHTML = "<div class='online-user'>⚪ Aucun utilisateur connecté</div>";
+return;
+}
+
+list.innerHTML = "";
+
+usersData.forEach(u=>{
+list.innerHTML += `
+<div class="online-user">
+🟢 ${u.username} — IP: ${u.ip}<br>
+⏱️ connecté: ${timeAgo(u.login_time)}
+</div>
+`;
+});
+}
+
+function timeAgo(dateString){
+let date = new Date(dateString);
+let now = new Date();
+let diff = Math.floor((now - date) / 1000);
+
+if(diff < 0) diff = 0;
+
+let h = Math.floor(diff / 3600);
+let m = Math.floor((diff % 3600) / 60);
+let s = diff % 60;
+
+h = String(h).padStart(2, '0');
+m = String(m).padStart(2, '0');
+s = String(s).padStart(2, '0');
+
+return `${h}:${m}:${s}`;
+}
+
+setInterval(renderOnline, 1000);
+setInterval(loadOnline, 10000);
+
+loadOnline();
+
+function deleteRow(id,btn){
+    if(!confirm("Supprimer cet utilisateur ?")) return;
+
+    fetch("/delete_user/"+id)
+    .then(res=>{
+        if(res.ok){
+            btn.closest("tr").remove();
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>

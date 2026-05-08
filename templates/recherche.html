@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Programme de suivi des patients</title>
+<style>
+body{font-family:Arial;background:#f4f6f9;margin:0;padding:0;text-align:center;}
+.container{width:800px;margin:40px auto;background:white;padding:40px;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,0.2);}
+.logo{width:100%;height:auto;margin-bottom:20px;border-radius:10px;object-fit:cover;}
+h2{margin:10px 0 25px 0;color:#2c3e50;}
+input{width:95%;padding:14px;margin:10px 0;border-radius:10px;border:1px solid #ccc;font-size:16px;}
+button{width:98%;padding:14px;background:#0b1a33;color:#d4af37;border:none;border-radius:10px;font-size:17px;cursor:pointer;margin-top:10px;font-weight:bold;}
+button:hover{background:#1a1f40;}
+.footer{margin-top:25px;font-size:15px;font-weight:bold;color:#0b1a33;background: linear-gradient(90deg, #0b1a33, #d4af37);-webkit-background-clip: text;-webkit-text-fill-color: transparent;}
+</style>
+</head>
+<body>
+<div class="container">
+<img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+<h2>Recherche</h2>
+<input type="text" placeholder="Rechercher un patient...">
+<button>Rechercher</button>
+<button onclick="location.href='/dashboard'">Retour</button>
+<div class="footer">
+ Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+</div>
+</body>
+</html>

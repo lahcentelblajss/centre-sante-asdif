@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Importer les patients depuis Excel</title>
+<style>
+body {
+    font-family:Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:0;
+    text-align:center;
+}
+.container {
+    width:680px;
+    margin:30px auto;
+    background:white;
+    padding:35px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.2);
+}
+.logo {
+    width:100%;
+    height:auto;
+    margin-bottom:20px;
+    border-radius:10px;
+    object-fit:cover;
+}
+h2 {
+    margin:10px 0 25px 0;
+    color:#2c3e50;
+}
+input[type="file"] {
+    width:90%;
+    padding:12px;
+    margin:15px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:15px;
+    font-weight:bold;
+}
+button {
+    width:95%;
+    padding:12px;
+    background:#0b1a33;
+    color:#d4af37;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+}
+button:hover {
+    background:#1a1f40;
+}
+.footer {
+    margin-top:20px;
+    font-size:14px;
+    font-weight:bold;
+    color:#0b1a33;
+    background: linear-gradient(90deg, #0b1a33, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.back-btn {
+    width:50%;
+    padding:12px;
+    margin-top:15px;
+    background:#555;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:15px;
+    cursor:pointer;
+}
+.back-btn:hover {
+    background:#333;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+<h2>Importer les patients depuis Excel</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="excel_file" accept=".xlsx,.xls" required>
+    <button type="submit">Importer</button>
+</form>
+
+<!-- زر العودة -->
+<button class="back-btn" onclick="window.location.href='/patients'">Retour à la liste des patients</button>
+
+<div class="footer">
+ Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+</div>
+</body>
+</html>

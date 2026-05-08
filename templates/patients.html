@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Patients</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* 🔥 FULL SCREEN + CENTER */
+html, body{
+    height:100%;
+    margin:0;
+}
+
+body{
+    font-family:'Poppins', sans-serif;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center fixed;
+    background-size:cover;
+}
+
+/* 🔷 CONTAINER */
+.container{
+    width:48%;
+
+    background:rgba(255,255,255,0.18);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+
+    padding:25px;
+    border-radius:15px;
+
+    border:1px solid rgba(255,255,255,0.25);
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* LOGOS */
+.logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    margin-bottom:30px;
+}
+
+.logos img{
+    width:300px;
+    max-height:160px;
+    object-fit:contain;
+    border-radius:10px;
+}
+
+h2{
+    text-align:center;
+    font-weight:bold;
+    color:#1f2a44;
+
+    font-family: Constantia, "Times New Roman", serif;
+    font-size:28px;
+
+    margin:25px 0 45px 0;
+}
+
+/* FORM */
+form{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:10px;
+}
+
+/* INPUTS */
+input, select{
+    padding:9px;
+
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+
+    border:1px solid rgba(0,0,0,0.2);
+    border-radius:8px;
+
+    font-size:14px;
+
+    font-family: Constantia, "Times New Roman", serif;
+    font-weight:bold;
+
+    color:#1f2a44;
+}
+
+input:focus, select:focus{
+    border-color:#d4af37;
+    box-shadow:0 0 10px rgba(212,175,55,0.4);
+    outline:none;
+    background:rgba(255,255,255,0.35);
+}
+
+.full{ grid-column:1 / span 2; }
+
+#suggestions{
+    grid-column:1 / span 2;
+
+    max-height:160px;
+    overflow-y:auto;
+
+    position:relative;
+    z-index:999;
+}
+
+.suggest{
+    background:white;
+    border:1px solid #ddd;
+    padding:6px;
+    cursor:pointer;
+}
+
+.suggest:hover{
+    background:#f1f1f1;
+}
+
+/* BUTTON ROW */
+.buttons-row{
+    grid-column:1 / span 2;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+/* BUTTONS */
+.btn{
+    flex:1;
+    max-width:140px;
+
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(6px);
+
+    color:#1f2a44;
+    border:1px solid rgba(212,175,55,0.6);
+
+    padding:7px;
+    font-size:12px;
+    font-weight:700;
+    border-radius:8px;
+    cursor:pointer;
+
+    transition:0.3s ease;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn:hover{
+    background:rgba(255,255,255,0.4);
+    box-shadow:0 0 12px rgba(212,175,55,0.5);
+    transform:translateY(-2px);
+}
+
+/* CLOCK + DATE */
+.clock-box{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(6px);
+
+    border:1px solid rgba(212,175,55,0.6);
+    border-radius:10px;
+
+    padding:8px 10px;
+
+    box-shadow:0 0 15px rgba(212,175,55,0.4);
+    transition:0.3s;
+}
+
+.clock-box:hover{
+    box-shadow:0 0 20px rgba(212,175,55,0.8);
+    transform:scale(1.02);
+}
+
+.clock, .date{
+    font-family:'Poppins', sans-serif;
+    font-weight:800;
+    font-size:13px;
+    color:#0b1a33;
+    letter-spacing:1px;
+    text-shadow:0 0 10px rgba(212,175,55,0.7);
+    white-space:nowrap;
+}
+
+/* ADD BUTTON */
+.center-add{
+    grid-column:1 / span 2;
+    display:flex;
+    justify-content:center;
+    margin-top:8px;
+    margin-bottom:18px;
+}
+
+.add-btn{
+    position:relative;
+    overflow:hidden;
+
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(8px);
+
+    color:#0b1a33;
+    border:1px solid rgba(212,175,55,0.7);
+
+    padding:14px 45px;
+    font-size:15px;
+    font-weight:900;
+    border-radius:14px;
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    transition:0.3s ease;
+    box-shadow:0 3px 12px rgba(0,0,0,0.1);
+}
+
+.add-btn:hover{
+    background:rgba(11,26,51,0.9);
+    color:#d4af37;
+    transform:translateY(-3px) scale(1.03);
+    box-shadow:0 0 18px rgba(212,175,55,0.7);
+}
+
+footer{
+    text-align:center;
+    margin-top:20px;
+    font-size:13px;
+    font-weight:600;
+    color:#1f2a44;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logos">
+    <img src="{{ url_for('static', filename='logine2.png') }}">
+    <img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>Ajouter Patient</h2>
+
+<form method="POST" id="form">
+
+<input type="text" name="num" placeholder="Num">
+<input type="text" name="nom" id="nom" placeholder="Nom et prénom" autocomplete="off">
+
+<div id="suggestions"></div>
+
+<input type="text" name="sexe" id="sexe" placeholder="Sexe">
+<input type="text" name="age" id="age" placeholder="Âge">
+<input type="text" name="adresse" id="adresse" placeholder="Adresse">
+<input type="text" name="gde_consultation" placeholder="G.de Consultation">
+
+<input type="date" name="date" id="date" class="full">
+<input type="text" name="cas" placeholder="Cas" class="full">
+
+<div class="buttons-row">
+
+<button type="button" class="btn" onclick="window.location.href='/dashboard'">⬅ Retour</button>
+
+<div class="clock-box">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="date" id="dateText">--/--/----</div>
+</div>
+
+<button type="button" class="btn" onclick="toggleLang()">🌐 Langue</button>
+
+</div>
+
+<div class="center-add full">
+    <button type="submit" class="add-btn" id="addBtn" onclick="return handleAdd(event)">
+        ➕ Ajouter
+    </button>
+</div>
+
+</form>
+
+<footer>
+<strong>Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF</strong>
+</footer>
+
+</div>
+
+<script>
+
+document.getElementById("date").valueAsDate = new Date();
+
+/* CLOCK + DATE */
+function updateClock(){
+    let now = new Date();
+
+    let h = now.getHours().toString().padStart(2,'0');
+    let m = now.getMinutes().toString().padStart(2,'0');
+    let s = now.getSeconds().toString().padStart(2,'0');
+
+    document.getElementById("clock").innerText = `${h}:${m}:${s}`;
+
+    let options = { year:'numeric', month:'long', day:'numeric' };
+    document.getElementById("dateText").innerText = now.toLocaleDateString('fr-FR', options);
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+/* SEARCH */
+let input=document.getElementById("nom");
+let box=document.getElementById("suggestions");
+
+let sexe=document.getElementById("sexe");
+let age=document.getElementById("age");
+let adresse=document.getElementById("adresse");
+
+input.addEventListener("input",function(){
+
+if(this.value.length < 1){
+    box.innerHTML="";
+    return;
+}
+
+fetch("/search_patients?term="+this.value)
+.then(r=>r.json())
+.then(data=>{
+
+box.innerHTML="";
+
+data.forEach(p=>{
+
+let div=document.createElement("div");
+div.className="suggest";
+div.innerText=p.nom;
+
+div.onclick=()=>{
+input.value=p.nom;
+sexe.value=p.sexe;
+age.value=p.age;
+adresse.value=p.adresse;
+box.innerHTML="";
+};
+
+box.appendChild(div);
+});
+
+});
+});
+
+/* ADD + SOUND */
+function handleAdd(event){
+    event.preventDefault();
+
+    const btn = document.getElementById("addBtn");
+
+    btn.style.background = "#1f9d55";
+    btn.innerText = "✔ Ajouté avec succès";
+
+    // 🔊 SOUND FIXED
+    const okSound = new Audio("/static/Beep25.mp3");
+    okSound.volume = 0.7;
+    okSound.currentTime = 0;
+    okSound.play().catch(()=>{});
+
+    setTimeout(()=>{
+        document.getElementById("form").submit();
+    }, 1500);
+
+    return false;
+}
+
+function toggleLang(){
+    alert("Langue à connecter avec Flask");
+}
+
+</script>
+
+</body>
+</html>

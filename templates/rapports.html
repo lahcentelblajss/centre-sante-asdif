@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Rapports mensuels</title>
+
+<style>
+body{
+    font-family:Arial;
+    margin:0;
+    padding:0;
+    background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center;
+    background-size:cover;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:40px auto;
+    background:rgba(255,255,255,0.28);
+    backdrop-filter:blur(5px);
+    padding:25px;
+    border-radius:15px;
+    border:1px solid rgba(255,255,255,0.35);
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+.logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    margin-bottom:30px;
+}
+
+.logos img{
+    width:298px;
+    height:auto;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+h2{
+    text-align:center;
+    color:#0b1a33;
+    font-family: Constantia, "Times New Roman", serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.top-controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-bottom:20px;
+}
+
+select, button, input{
+    padding:9px 12px;
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(212,175,55,0.5);
+    border-radius:10px;
+    font-weight:bold;
+    color:#0b1a33;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+select:hover, button:hover, input:hover{
+    background:#0b1a33;
+    color:#d4af37;
+    box-shadow:0 0 12px rgba(212,175,55,0.5);
+    transform:translateY(-2px);
+}
+
+.stats{
+    margin-top:20px;
+    padding:15px;
+    background:rgba(255,255,255,0.45);
+    backdrop-filter:blur(3px);
+    border-radius:12px;
+    display:flex;
+    justify-content:space-around;
+    font-weight:bold;
+    color:#0b1a33;
+    border:1px solid rgba(0,0,0,0.08);
+    box-shadow:0 6px 15px rgba(0,0,0,0.08);
+    font-size:16px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(4px);
+    border-radius:10px;
+    overflow:hidden;
+}
+
+th, td{
+    border:1px solid rgba(0,0,0,0.15);
+    padding:10px;
+    text-align:center;
+    font-family: Constantia, "Times New Roman", serif;
+    font-weight:bold;
+}
+
+th{
+    background:#0b1a33;
+    color:#d4af37;
+}
+
+tr:nth-child(even){
+    background:rgba(255,255,255,0.25);
+}
+
+tr:hover{
+    background:rgba(212,175,55,0.25);
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+    font-weight:bold;
+    color:#0b1a33;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logos">
+    <img src="{{ url_for('static', filename='logine2.png') }}">
+    <img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>Rapports mensuels</h2>
+
+<form method="GET" id="filterForm">
+
+<div class="top-controls">
+
+<select name="mois">
+<option value="">Mois</option>
+{% for m in range(1,13) %}
+<option value="{{ m }}">{{ m }}</option>
+{% endfor %}
+</select>
+
+<!-- ✔ ANNÉE FIX (compatible string Flask) -->
+<select name="annee" id="anneeSelect">
+<option value="">Année</option>
+
+{% for a in annees %}
+    {% set year = a|int %}
+    {% if year <= 2030 %}
+        <option value="{{ year }}">{{ year }}</option>
+    {% endif %}
+{% endfor %}
+
+</select>
+
+<select name="sexe">
+<option value="">Sexe</option>
+<option value="M">M</option>
+<option value="F">F</option>
+</select>
+
+<input type="text" name="numero" placeholder="Consultation">
+<input type="text" name="adresse" placeholder="Adresse">
+
+<button type="submit">Filtrer</button>
+<button type="button" onclick="exportPDF()">PDF</button>
+<button type="button" onclick="window.location.href='/dashboard'">Retour</button>
+
+</div>
+</form>
+
+{% if patients %}
+<div class="stats">
+    <div>Total: <span class="counter" data-target="{{ total }}">0</span></div>
+    <div>Hommes: <span class="counter" data-target="{{ hommes }}">0</span></div>
+    <div>Femmes: <span class="counter" data-target="{{ femmes }}">0</span></div>
+</div>
+{% endif %}
+
+{% if patients and patients|length > 0 %}
+<table>
+<tr>
+<th>N°</th>
+<th>Nom</th>
+<th>Sexe</th>
+<th>Age</th>
+<th>Adresse</th>
+<th>G.de Consultation</th>
+<th>Date</th>
+<th>Cas</th>
+</tr>
+
+{% for p in patients %}
+<tr>
+<td>{{ p[0] }}</td>
+<td>{{ p[1] }}</td>
+<td>{{ p[2] }}</td>
+<td>{{ p[3] }}</td>
+<td>{{ p[4] }}</td>
+<td>{{ p[5] }}</td>
+<td>{{ p[6][:10] }}</td>
+<td>{{ p[7] }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p style="text-align:center;font-weight:bold;margin-top:20px;">
+Aucune donnée trouvée
+</p>
+{% endif %}
+
+<div class="footer">
+Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+<script>
+function animateCounter(el){
+    const target = +el.getAttribute("data-target");
+    let count = 0;
+    let step = Math.ceil(target / 80);
+
+    function update(){
+        count += step;
+        if(count < target){
+            el.innerText = count;
+            requestAnimationFrame(update);
+        } else {
+            el.innerText = target;
+        }
+    }
+    update();
+}
+
+window.onload = function(){
+    document.querySelectorAll(".counter").forEach(el=>{
+        animateCounter(el);
+    });
+};
+
+/* PDF */
+function exportPDF(){
+
+    const mois = document.querySelector("select[name='mois']").value || "";
+    const annee = document.querySelector("select[name='annee']").value || "";
+    const sexe = document.querySelector("select[name='sexe']").value || "";
+    const numero = document.querySelector("input[name='numero']").value || "";
+    const adresse = document.querySelector("input[name='adresse']").value || "";
+
+    const url = "/export_pdf"
+        + "?mois=" + encodeURIComponent(mois)
+        + "&annee=" + encodeURIComponent(annee)
+        + "&sexe=" + encodeURIComponent(sexe)
+        + "&numero=" + encodeURIComponent(numero)
+        + "&adresse=" + encodeURIComponent(adresse);
+
+    window.location.href = url;;
+}
+
+/* ✔ SHOW YEARS > 2030 ON INTERACTION */
+const allYears = {{ annees|tojson }};
+const select = document.getElementById("anneeSelect");
+let expanded = false;
+
+function loadExtraYears(){
+    if(expanded) return;
+    expanded = true;
+
+    allYears.forEach(y=>{
+        const year = parseInt(y);
+        if(year > 2030){
+            const opt = document.createElement("option");
+            opt.value = year;
+            opt.textContent = year;
+            select.appendChild(opt);
+        }
+    });
+}
+
+select.addEventListener("focus", loadExtraYears);
+select.addEventListener("wheel", loadExtraYears);
+select.addEventListener("mousedown", loadExtraYears);
+</script>
+
+</body>
+</html>

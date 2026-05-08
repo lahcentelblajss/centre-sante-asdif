@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Statistiques des patients</title>
+
+<style>
+body{
+    font-family:Arial;
+    margin:0;
+    padding:0;
+    text-align:center;
+
+    background:url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center;
+    background-size:cover;
+}
+
+/* CONTAINER */
+.container{
+    width:95%;
+    max-width:1100px;
+    margin:40px auto;
+
+    background:rgba(255,255,255,0.18);
+    backdrop-filter:blur(10px);
+
+    padding:25px;
+    border-radius:15px;
+
+    border:1px solid rgba(255,255,255,0.25);
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* 🔥 LOGOS */
+.logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    margin-bottom:30px;
+}
+
+.logos img{
+    width:300px;
+    height:auto;
+    object-fit:cover;
+    border-radius:10px;
+}
+/* TITLE */
+h2{
+    margin:15px 0 25px 0;
+    color:#0b1a33;
+    font-family: Constantia, "Times New Roman", serif;
+    font-weight:bold;
+    font-size:20px;
+}
+
+/* ========================= */
+/* 🔥 FILTERS ONE LINE ONLY */
+/* ========================= */
+.filters{
+    display:flex;
+    flex-wrap:nowrap;   /* 🔥 سطر واحد فقط */
+    justify-content:space-between;
+    gap:6px;
+    margin-top:15px;
+}
+
+/* FILTER CARD */
+.filter-card{
+    flex:1;
+    min-width:0;
+
+    display:flex;
+    flex-direction:column;
+
+    background:rgba(255,255,255,0.22);
+    backdrop-filter:blur(8px);
+
+    padding:6px 7px;
+    border-radius:10px;
+
+    border:1px solid rgba(212,175,55,0.3);
+    box-shadow:0 3px 10px rgba(0,0,0,0.05);
+
+    transition:0.3s;
+}
+
+.filter-card:hover{
+    box-shadow:0 0 10px rgba(212,175,55,0.4);
+    transform:translateY(-2px);
+}
+
+.filter-card label{
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:3px;
+    color:#0b1a33;
+    font-family: Constantia, "Times New Roman", serif;
+}
+
+/* INPUTS */
+.filter-card input,
+.filter-card select{
+    width:100%;
+    box-sizing:border-box;
+
+    padding:5px 6px;
+    font-size:11px;
+    font-weight:bold;
+
+    font-family: Constantia, "Times New Roman", serif;
+
+    border-radius:7px;
+    border:1px solid rgba(0,0,0,0.2);
+    outline:none;
+
+    background:rgba(255,255,255,0.35);
+}
+
+/* YEAR SCROLL */
+#anneeSelect{
+    max-height:140px;
+    overflow-y:auto;
+}
+
+/* ACTIONS */
+.actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+}
+
+.left-action,.center-action,.right-action{flex:1;}
+.left-action{text-align:left;}
+.center-action{text-align:center;}
+.right-action{text-align:right;}
+
+/* BUTTONS */
+button{
+    padding:7px 14px;
+
+    background:rgba(255,255,255,0.25);
+    backdrop-filter:blur(6px);
+
+    color:#0b1a33;
+    border:1px solid rgba(212,175,55,0.6);
+
+    border-radius:10px;
+    cursor:pointer;
+
+    font-weight:bold;
+    font-size:13px;
+
+    transition:0.3s;
+}
+
+button:hover{
+    background:#0b1a33;
+    color:#d4af37;
+    box-shadow:0 0 12px rgba(212,175,55,0.6);
+}
+
+.lang-btn{
+    padding:5px 9px;
+    font-size:12px;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:25px;
+
+    background:rgba(255,255,255,0.35);
+    backdrop-filter:blur(4px);
+
+    border-radius:10px;
+    overflow:hidden;
+}
+
+th, td{
+    border:1px solid rgba(0,0,0,0.15);
+    padding:10px;
+    font-size:14px;
+    font-weight:bold;
+    font-family: Constantia, "Times New Roman", serif;
+}
+
+th{
+    background:#0b1a33;
+    color:#d4af37;
+}
+
+tr:nth-child(even){
+    background:rgba(255,255,255,0.25);
+}
+
+tr:hover{
+    background:rgba(212,175,55,0.25);
+}
+
+/* FOOTER */
+.footer{
+    margin-top:25px;
+    font-size:14px;
+    font-weight:bold;
+    color:#0b1a33;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logos">
+    <img src="{{ url_for('static', filename='logine2.png') }}">
+    <img src="{{ url_for('static', filename='logine1.png') }}">
+</div>
+
+<h2>Statistiques des patients</h2>
+
+<form method="GET">
+
+<div class="filters">
+
+<div class="filter-card">
+<label>Date</label>
+<input type="date" name="date">
+</div>
+
+<div class="filter-card">
+<label>Mois</label>
+<select name="mois">
+<option value="">Mois</option>
+{% for m in range(1,13) %}
+<option value="{{m}}">{{m}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="filter-card">
+<label>Année</label>
+<select name="annee" id="anneeSelect">
+<option value="">Année</option>
+{% for a in range(2020, 2031) %}
+<option value="{{a}}">{{a}}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="filter-card">
+<label>Sexe</label>
+<select name="sexe">
+<option value="">Sexe</option>
+<option value="M">Homme</option>
+<option value="F">Femme</option>
+</select>
+</div>
+
+<div class="filter-card">
+<label>Adresse</label>
+<input type="text" name="adresse">
+</div>
+
+<div class="filter-card">
+<label>Âge</label>
+<input type="number" name="age">
+</div>
+
+<div class="filter-card">
+<label>GDC</label>
+<select name="gdc">
+<option value="">G, De Consultation</option>
+{% for g in gdc_list %}
+<option value="{{ g }}">{{ g }}</option>
+{% endfor %}
+</select>
+</div>
+
+</div>
+
+<div class="actions">
+
+<div class="left-action">
+<button type="button" onclick="location.href='/dashboard'">⬅ Retour</button>
+</div>
+
+<div class="center-action">
+<button type="submit">Filtrer</button>
+</div>
+
+<div class="right-action">
+<button type="button" class="lang-btn" onclick="location.href='?lang=fr'">FR</button>
+<button type="button" class="lang-btn" onclick="location.href='?lang=ar'">AR</button>
+</div>
+
+</div>
+
+</form>
+
+<table>
+<thead>
+<tr>
+<th>G, De Consultation</th>
+<th>Total</th>
+<th>Homme</th>
+<th>Femme</th>
+</tr>
+</thead>
+
+<tbody>
+{% for stat in stats %}
+<tr {% if stat.total == max_total %} style="background:rgba(212,175,55,0.5)" {% endif %}>
+<td>{{ stat.gdc }}</td>
+<td>{{ stat.total }}</td>
+<td>{{ stat.homme }}</td>
+<td>{{ stat.femme }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<div class="footer">
+Tous droits réservés 2026 © - Centre de Santé Rural Niveau 2 - ASDIF
+</div>
+
+</div>
+
+<script>
+window.onload = function () {
+    document.getElementById("anneeSelect").value = "2024";
+};
+</script>
+
+</body>
+</html>
